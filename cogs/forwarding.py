@@ -5,7 +5,7 @@ from discord.ext import commands
 class Anuncios:
     channels = {}
 
-    default_channel = '410366860354256897'
+    default_channel = '258295391391449088'
 
     def __init__(self, bot: commands.Bot):
         self.bot = bot
