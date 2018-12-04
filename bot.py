@@ -7,14 +7,15 @@ from discord.ext import commands
 import os
 
 
-# Key
-token = os.environ['token']
-
-print(token)
+# Token
+try:
+    token = os.environ['token']
+except:
+    print('Local test bot')
 
 description = '''Intercambia mensajes malvados'''
 
-modules = {'forwarding'}
+modules = {'forwarding', 'chat'}
 
 bot = commands.Bot(command_prefix='$', description=description)
 

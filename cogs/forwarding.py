@@ -1,11 +1,12 @@
 import discord
 from discord.ext import commands
+import utils.emoji_data as emoji
 
-
-class Anuncios:
+class AnunciosCog:
     channels = {}
 
     default_channel = '258295391391449088'
+    bernar_id = '194087774922604545'
 
     def __init__(self, bot: commands.Bot):
         self.bot = bot
@@ -14,7 +15,6 @@ class Anuncios:
     def load_channels(self):
         for channel in self.bot.get_all_channels():
             self.channels[channel.id] = channel
-        print(self.channels)
 
     @commands.command(pass_context=True, hidden=True)
     async def load(self, ctx):
@@ -53,16 +53,16 @@ class Anuncios:
         # Get the author
         user = ctx.message.author
         # Obtener destinatario
-        send_member = list(filter(lambda x: x.name == member, list(self.bot.get_all_members())))
-        if send_member.__len__() == 0:
-            await self.bot.send_message(user, 'No se ha encontrado al destinatario del comunicado')
+        receiver = emoji.get_receiver(self.bot, user)
+        if receiver is None:
+            await self.bot.send_message(user, 'No ha elegido un destinatario para el comunicado')
             return
-        send_member = send_member[0]
+
         # Mensaje a enviar
         mensaje_final = await self.construir(user)
         # Envío del mensaje
         try:
-            await self.bot.send_message(send_member, mensaje_final)
+            await self.bot.send_message(receiver, mensaje_final)
         except:
             await self.bot.send_message(user, 'No se ha podido enviar el comunicado al canal seleccionado')
 
@@ -105,4 +105,4 @@ class Anuncios:
 
 
 def setup(bot):
-    bot.add_cog(Anuncios(bot))
+    bot.add_cog(AnunciosCog(bot))
