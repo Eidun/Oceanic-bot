@@ -53,7 +53,7 @@ class AnunciosCog:
         # Get the author
         user = ctx.message.author
         # Obtener destinatario
-        receiver = emoji.get_receiver(self.bot, user)
+        receiver = await emoji.get_receiver(self.bot, user)
         if receiver is None:
             await self.bot.send_message(user, 'No ha elegido un destinatario para el comunicado')
             return
