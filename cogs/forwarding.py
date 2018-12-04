@@ -48,7 +48,7 @@ class AnunciosCog:
             await self.bot.send_message(user, 'No se ha podido enviar el comunicado al canal seleccionado')
 
     @commands.command(pass_context=True)
-    async def anuncio_privado(self, ctx, member):
+    async def anuncio_privado(self, ctx):
         """Comienza el anuncio privado. La configuración después"""
         # Get the author
         user = ctx.message.author
