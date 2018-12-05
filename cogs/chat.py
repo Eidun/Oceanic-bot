@@ -95,7 +95,8 @@ class ChatCog:
                                                     f'"{user.name}" con el alias de "{creator_alias.content}"\n'
                                                     f'"{receiver.name}" con el alias de "{receiver_alias.content}"\n'
                                                     f'Ahora recibirá sus mensajes retransmitidos```')
-            master_alias = creator_alias.content if master.id == user.id else 'Master Malvado'
+            master_alias = creator_alias.content if master.id == user.id else receiver_alias.content \
+                if master.id == receiver.id else 'Master Malvado'
             chat_room.new_chat(creator=user, receiver=receiver, master=master, creator_alias=creator_alias.content,
                                receiver_alias=receiver_alias.content, master_alias=master_alias)
 
