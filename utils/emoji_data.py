@@ -1,10 +1,9 @@
-bernar_id = '194087774922604545'
-
 players_id = ['222022647796465664', '186969542927450112', '176716105304244224', '187146845502439424',
               '404604675225157633', '245959396503453716', '194087774922604545']
 
 emoji_list = [u"\u0031" + u"\u20E3", u"\u0032" + u"\u20E3", u"\u0033" + u"\u20E3", u"\u0034" + u"\u20E3",
-              u"\u0035" + u"\u20E3", u"\u0036" + u"\u20E3", u"\u0037" + u"\u20E3", u"\u0038" + u"\u20E3"]
+              u"\u0035" + u"\u20E3", u"\u0036" + u"\u20E3", u"\u0037" + u"\u20E3", u"\u0038" + u"\u20E3",
+              u"\u0039" + u"\u20E3"]
 
 
 async def get_receiver(bot, user):
@@ -20,7 +19,7 @@ async def get_receiver(bot, user):
     for emoji in grouped.keys():
         await bot.add_reaction(receivers, emoji)
 
-    receiver_emoji = await bot.wait_for_reaction(user=user, message=receivers, emoji=emoji_list)
+    receiver_emoji = await bot.wait_for_reaction(user=user, message=receivers, emoji=emoji_list, timeout=50)
     if receiver_emoji is None:
         return
     return grouped[receiver_emoji.reaction.emoji]

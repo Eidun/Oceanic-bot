@@ -1,6 +1,10 @@
 import discord
+import requests
 from discord.ext import commands
+
 import utils.emoji_data as emoji
+from models.chat_model import chat_room
+
 
 class AnunciosCog:
     channels = {}
@@ -30,6 +34,10 @@ class AnunciosCog:
         """Comienza el anuncio. La configuración después"""
         # Get the author
         user = ctx.message.author
+
+        if chat_room.is_chatting(user):
+            await self.bot.send_message(user, 'Usted debe salir antes de nuestras salas de chat')
+            return
         # Obtener canal destinatario
         if (channel is None):
             channel = self.default_channel
@@ -39,11 +47,15 @@ class AnunciosCog:
             await self.bot.send_message(user, 'No se ha podido encontrar el canal destinatario')
             return
         # Mensaje a enviar
-        mensaje_final = await self.construir(user)
+        mensaje_final, filename = await self.construir(user)
 
         # Envío del mensaje
         try:
-            await self.bot.send_message(send_channel, mensaje_final)
+            if filename:
+                await self.bot.send_message(send_channel, mensaje_final)
+            else:
+                with open('img/' + filename, 'rb') as image:
+                    await self.bot.send_file(send_channel, image, content=mensaje_final)
         except:
             await self.bot.send_message(user, 'No se ha podido enviar el comunicado al canal seleccionado')
 
@@ -52,6 +64,9 @@ class AnunciosCog:
         """Comienza el anuncio privado. La configuración después"""
         # Get the author
         user = ctx.message.author
+        if chat_room.is_chatting(user):
+            await self.bot.send_message(user, 'Usted debe salir antes de nuestras salas de chat')
+            return
         # Obtener destinatario
         receiver = await emoji.get_receiver(self.bot, user)
         if receiver is None:
@@ -59,10 +74,14 @@ class AnunciosCog:
             return
 
         # Mensaje a enviar
-        mensaje_final = await self.construir(user)
+        mensaje_final, filename = await self.construir(user)
         # Envío del mensaje
         try:
-            await self.bot.send_message(receiver, mensaje_final)
+            if filename is None:
+                await self.bot.send_message(receiver, mensaje_final)
+            else:
+                with open('img/' + filename, 'rb') as image:
+                    await self.bot.send_file(receiver, image, content=mensaje_final)
         except:
             await self.bot.send_message(user, 'No se ha podido enviar el comunicado al canal seleccionado')
 
@@ -76,13 +95,19 @@ class AnunciosCog:
         anuncio: discord.Message = await self.bot.wait_for_message(timeout=50, author=user, check=private_channel)
         if anuncio is None:
             return
+        filename = None
+        if anuncio.attachments:
+            filename = anuncio.attachments[0]['filename']
+            with open('img/' + filename, 'wb') as image:
+                response = requests.get(anuncio.attachments[0]['url'])
+                image.write(response.content)
         # Firma del anunciante
         msg: discord.Message = await self.bot.send_message(user, 'Recibido. ¿Desea añadir una firma?')
         await self.bot.add_reaction(msg, u"\u2705")
         await self.bot.add_reaction(msg, u"\u274E")
 
         # Solo uno de los dos emojis que se esperan
-        def allowed_reaction(reaction, user):
+        def allowed_reaction(reaction, response_user):
             return (reaction.emoji == u"\u2705") or (reaction.emoji == u"\u274E")
 
         # Emoji respuesta
@@ -101,7 +126,7 @@ class AnunciosCog:
 
         # Construir mensaje respuesta
         mensaje_final = f'```ini\n\n[{firma}]\n{anuncio.content}\n```'
-        return mensaje_final
+        return mensaje_final, filename
 
 
 def setup(bot):
