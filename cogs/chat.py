@@ -14,7 +14,7 @@ class ChatCog:
         self.bot = bot
 
     @commands.command(pass_context=True)
-    async def crear_chaty(self, ctx):
+    async def crear_chat(self, ctx):
         """Crea un nuevo chat privado."""
         user = ctx.message.author
         # Checks if user is already chatting
