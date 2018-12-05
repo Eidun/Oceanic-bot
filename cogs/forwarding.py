@@ -51,7 +51,7 @@ class AnunciosCog:
 
         # Envío del mensaje
         try:
-            if filename:
+            if filename is None:
                 await self.bot.send_message(send_channel, mensaje_final)
             else:
                 with open('img/' + filename, 'rb') as image:
